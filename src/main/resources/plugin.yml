@@ -1,0 +1,21 @@
+name: Isybank
+version: '1.0.0'
+main: dev.sodiograaz.internal.IsybankEconomy
+api-version: '1.21'
+authors: [ Sodiograaz ]
+depends:
+  - Vault
+
+commands:
+  money:
+    permission: "isybank.admin"
+    aliases:
+      - eco
+  balance:
+    permission: "isybank.user"
+    aliases:
+      - bal
+  pay:
+    permission: "isybank.user"
+  data:
+    permission: "isybank.admin"

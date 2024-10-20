@@ -1,0 +1,60 @@
+####################
+#
+# Storage Configuration
+#
+####################
+Storage:
+  Host: "localhost"
+  Port: "3306"
+  Username: "root"
+  Password: "root"
+  Database: "me_economy"
+  UrlParameters: # This is top to down list, so the first string always has to be "?"
+    autoReconnect: true
+    unicode: true
+    characterEncoding: UTF-8
+    cachePrepStmts: true
+    prepStmtCacheSize: 250
+    prepStmtCacheSqlLimit: 2048
+
+
+Messages:
+  Prefix: "<gray>[<b><gradient:#018DDE:#00BF79>Is</gradient><gradient:#00BF79:#E98D00>yba</gradient><gradient:#E98D00:#E98D00>nk</gradient></b><gray>]"
+  Economy-Prefix:
+    Letters-Singular: "Euro"
+    Letters-Plural: "Euro"
+    Letters-Acronym: "E"
+    Unicode: "€"
+  # General
+  NoPermission: "%prefix% <red>Lacking permissions '%permission%'."
+  PlayerNotFound: "%prefix% <red>No player found."
+  InvalidCommand: "%prefix% <red>Invalid Command."
+  CommandError: "%prefix% <red>Command error: <white>There are errors in the command."
+  ExceedingLimitNumbers: "%prefix% <red>Your amount has exceeding number processable value (9E+10)."
+  # Accepted Placeholders:
+  # %economy_prefix_singular%
+  # %economy_prefix_plural%
+  # %economy_prefix_acronym%
+  # %economy_prefix_unicode%
+  P2P-Operations:
+    Pay-To-ItSelf: "%prefix% <white>You cannot send money to yourself."
+    Pay-Someone: "%prefix% <white>You sent <yellow>%amount%%economy_prefix_unicode% to <aqua>%target%."
+    Someone-Paid: "%prefix% <aqua>%sender% <white>has sent to you <yellow>%amount%%economy_prefix_unicode%."
+  Bank-Operations:
+    Give: "%prefix% <aqua>%player%'s <white>account was added <yellow>%amount%%economy_prefix_unicode%."
+    Give-Others: "%prefix% <aqua>%player% <white> added <yellow>%amount%%economy_prefix_unicode% to your account.."
+    Remove: "%prefix% <yellow>%amount%%economy_unicode% <white>has been removed from <aqua>%player%'s <white>account."
+    Remove-Others: "%prefix% <yellow>%amount%%economy_unicode% <white>has been removed from your acount by <aqua>%player%"
+    Set: "%prefix% <aqua>%player%'s <white>account has been set to <yellow>%amount%%economy_unicode%."
+    Set-Others: "%prefix% <white>Your account has been set to <yellow>%amount%%economy_unicode% by <aqua>%player%."
+  Bank-Messages:
+    Errors:
+      NotEnoughMoney: "%prefix% <red>You don't have enough money to do that."
+      BankIsDisabledForSafetyMeasures: "%prefix% <red>This bank is disabled for safety measures."
+      BankPaymentsAreDisabled: "%prefix% <white>Payments for this <yellow>player <white>are disabled."
+    Balance-Self: "%prefix% <white>You have <yellow>%amount%%economy_prefix_unicode%."
+    Balance-Others: "%prefix% <aqua>%player%'s <white>account has <yellow>%amount%%economy_prefix_unicode%."
+
+
+Economy:
+  Initial-Balance: 5000.00
