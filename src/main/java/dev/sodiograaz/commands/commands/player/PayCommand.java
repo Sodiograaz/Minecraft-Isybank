@@ -56,7 +56,6 @@ public class PayCommand implements MECommand
 		
 		if (RegexUtils.checkForPlayerUsernameValidity(args[0]))
 		{
-			player.sendMessage("Player username validity does not fit.");
 			player.sendMessage(ConfigurationUtils.PlayerNotFoundComponent());
 			return true;
 		}
@@ -81,7 +80,13 @@ public class PayCommand implements MECommand
 		double parsedAmount = Double.parseDouble(args[1]);
 		
 		// Parsed Amount Checks
-		if (parsedAmount < 0 || parsedAmount > NumberUtils.MAX_VALUE_SAFETY)
+		if(parsedAmount < NumberUtils.MIN_VALUE_SAFETY)
+		{
+			player.sendMessage(ConfigurationUtils.NegativeNumberValue());
+			return true;
+		}
+		
+		if (parsedAmount > NumberUtils.MAX_VALUE_SAFETY)
 		{
 			player.sendMessage(ConfigurationUtils.ExceedingNumberValue());
 			return true;
@@ -108,12 +113,13 @@ public class PayCommand implements MECommand
 			return true;
 		}
 		
-		BankAccountTransaction response = bankCashManager.pay(player.getName(), targetUsername, parsedAmount, "");
-		if (response.getResponseType().equals(ResponseType.ERROR))
+		if(!targetBankAccount.isAcceptsPayments())
 		{
-			player.sendMessage(ConfigurationUtils.InvalidCommandComponent());
+			player.sendMessage(ConfigurationUtils.BankPaymentsAreDisabled(targetUsername));
 			return true;
 		}
+		
+		this.bankCashManager.pay(player.getName(), targetUsername, parsedAmount, "No description.");
 		return true;
 	}
 	
@@ -131,6 +137,8 @@ public class PayCommand implements MECommand
 			BankAccount bank = bankManager.lookupBankByUserId(player.getUniqueId().toString());
 			return List.of(String.valueOf(bank.getBankAvailability()));
 		}
+		if(args.length == 3)
+			return List.of("Descrizione (opzionale");
 		return List.of();
 	}
 }

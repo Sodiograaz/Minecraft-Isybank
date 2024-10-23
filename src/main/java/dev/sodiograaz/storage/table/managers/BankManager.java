@@ -28,15 +28,15 @@ public class BankManager
 	
 	public BankAccount createBank(String userId, String bankId, double bankAvailability)
 	{
-		if(bankAlreadyRegistered(userId)) return BankAccount.emptyBankAccountWithError();
 		User user = this.playerManager.lookupPlayerByUserId(userId);
 		synchronized (this.connection)
 		{
-			try(PreparedStatement statement = this.connection.prepareStatement("INSERT INTO users_bank_data (userId, bank_availability, bankId) VALUES (?,?,?);"))
+			try(PreparedStatement statement = this.connection.prepareStatement("INSERT INTO users_bank_data (userId, bank_availability, acceptsPayments, bankId) VALUES (?,?,?,?);"))
 			{
 				statement.setString(1, user.getUserId());
 				statement.setDouble(2, bankAvailability);
-				statement.setString(3, bankId);
+				statement.setBoolean(3, false);
+				statement.setString(4, bankId);
 				statement.execute();
 			}
 			catch (SQLException ignored) {}
@@ -45,7 +45,6 @@ public class BankManager
 	}
 	
 	public BankAccount lookupBankByUserId(String userId) {
-		if(!bankAlreadyRegistered(userId)) return BankAccount.emptyBankAccountWithError();
 		User user = this.playerManager.lookupPlayerByUserId(userId);
 		synchronized (this.connection)
 		{
@@ -58,6 +57,7 @@ public class BankManager
 							.holder(user)
 							.bankId(query.getString("bankId"))
 							.bankAvailability(query.getLong("bank_availability"))
+							.acceptsPayments(false)
 							.build();
 			}
 			catch (SQLException ignored) {}

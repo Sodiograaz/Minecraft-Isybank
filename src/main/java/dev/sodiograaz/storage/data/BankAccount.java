@@ -16,6 +16,7 @@ public class BankAccount
 	private User holder;
 	private String bankId;
 	private double bankAvailability;
+	private boolean acceptsPayments;
 	private ResponseType responseType;
 	
 	public static BankAccount emptyBankAccount()

@@ -1,12 +1,15 @@
 package dev.sodiograaz.internal;
 
 import dev.sodiograaz.commands.CommandManager;
+import dev.sodiograaz.internal.hooks.VaultHook;
 import dev.sodiograaz.storage.StorageManager;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.byteflux.libby.BukkitLibraryManager;
 import net.byteflux.libby.Library;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 
@@ -55,6 +58,8 @@ public final class IsybankEconomy extends JavaPlugin {
 		}
 		storageManager = new StorageManager(this)
 				.createConnection();
+		
+		getServer().getServicesManager().register(Economy.class, new VaultHook(), this, ServicePriority.Highest);
 		
 		CommandManager.reflect();
 		lookupListeners();

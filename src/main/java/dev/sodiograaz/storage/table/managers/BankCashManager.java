@@ -62,16 +62,14 @@ public class BankCashManager
 		double bankAvailability = bankAccount.getBankAvailability();
 		double bankAfterGive = bankAvailability + money;
 		
-		// update the account
-		try (PreparedStatement statement = this.connection.prepareStatement("UPDATE users_bank_data SET bank_availability = ? WHERE bankId = ?;"))
-		{
+		try (PreparedStatement statement = this.connection.prepareStatement("UPDATE users_bank_data SET bank_availability = ? WHERE bankId = ?;")) {
 			statement.setDouble(1, bankAfterGive);
 			statement.setString(2, bankAccount.getBankId());
 			statement.executeUpdate();
 		}
 		catch (SQLException exception) {}
 		
-		return this.paymentsStaffManager.createStaffTransaction(moderator, username, bankAfterGive);
+		return this.paymentsStaffManager.createStaffTransaction(moderator, username, money);
 	}
 	
 	/**
@@ -83,9 +81,6 @@ public class BankCashManager
 	 */
 	public BankAccountStaffTransaction set(String moderator, String username, double money)
 	{
-		// Moderator
-		User moderatorUser = this.playerManager.lookupPlayer(moderator);
-		
 		// Target
 		User user = this.playerManager.lookupPlayer(username);
 		String userId = user.getUserId();
@@ -103,9 +98,9 @@ public class BankCashManager
 	}
 	
 	/**
-	 * Removes money from input from target
-	 * @param moderator The moderator
-	 * @param username The target
+	 * Removes money from target
+	 * @param moderator The moderator username
+	 * @param username The target username
 	 * @param money Money to give
 	 * @return {@link BankAccountStaffTransaction}
 	 */
@@ -127,16 +122,16 @@ public class BankCashManager
 		}
 		catch (SQLException exception) {}
 		
-		return this.paymentsStaffManager.createStaffTransaction(moderator, username, bankAfterGive);
+		return this.paymentsStaffManager.createStaffTransaction(moderator, username, money);
 	}
 	
 	/**
 	 * Removes money from holder
+	 *
 	 * @param holderUsername Who pays
-	 * @param money The money to remove
-	 * @return The holder availability after removal {@link BankAccountTransaction}
+	 * @param money          The money to remove
 	 */
-	public double removeFromUser(String holderUsername, double money)
+	public void removeFromUser(String holderUsername, double money)
 	{
 		User holder = this.playerManager.lookupPlayer(holderUsername);
 		String holderUserId = holder.getUserId();
@@ -151,8 +146,6 @@ public class BankCashManager
 			statement.setString(2, holderBankId);
 			statement.executeUpdate();
 		} catch (SQLException exception) {}
-		
-		return this.bankManager.lookupBankByUserId(holderUserId).getBankAvailability();
 	}
 	
 	/**
@@ -161,7 +154,7 @@ public class BankCashManager
 	 * @param money The money to add
 	 * @return The holder availability after adding the amount {@link BankAccountTransaction}
 	 */
-	public double addToUser(String payeeUsername, double money)
+	public void addToUser(String payeeUsername, double money)
 	{
 		User holder = this.playerManager.lookupPlayer(payeeUsername);
 		String payeeUserId = holder.getUserId();
@@ -178,12 +171,6 @@ public class BankCashManager
 			statement.executeUpdate();
 		} catch (SQLException exception) {}
 
-		return this.bankManager.lookupBankByUserId(payeeUserId).getBankAvailability();
-	}
-	
-	public double calculateVAT(double money)
-	{
-		return money + (money * 22 / 100);
 	}
 	
 	/**
@@ -195,29 +182,21 @@ public class BankCashManager
 	 */
 	public BankAccountTransaction pay(String holder, String payee, double money, String description)
 	{
-		double transaction = calculateVAT(money);
 		// Check holder then remove money from holder
 		OfflinePlayer holderOfflinePlayer = Bukkit.getOfflinePlayer(holder);
 		if(holderOfflinePlayer != null && holderOfflinePlayer.isOnline())
 		{
-			BankAccount holderBank = this.bankManager.lookupBankByUserId(this.playerManager.lookupPlayer(holder).getUserId());
 			Player player = holderOfflinePlayer.getPlayer();
-			if(transaction > holderBank.getBankAvailability())
-			{
-				player.sendMessage(ConfigurationUtils.NotEnoughMoney());
-				return BankAccountTransaction.emptyBankAccountTransactionWithError();
-			}
-			player.sendMessage(ConfigurationUtils.PaySomeone(payee, transaction));
+			player.sendMessage(ConfigurationUtils.PaySomeone(payee, money));
 		}
-		this.removeFromUser(holder, transaction);
+		this.removeFromUser(holder, money);
 		
 		// Add money to payee
-		this.addToUser(payee, transaction);
+		this.addToUser(payee, money);
 		if(Bukkit.getOfflinePlayer(payee) != null && Bukkit.getOfflinePlayer(payee).isOnline())
 		{
 			Player player = Bukkit.getOfflinePlayer(payee).getPlayer();
-			player.sendMessage(ConfigurationUtils.SomeonePaid(holder, transaction));
-			return BankAccountTransaction.emptyBankAccountTransactionWithError();
+			player.sendMessage(ConfigurationUtils.SomeonePaid(holder, money));
 		}
 		
 		return this.paymentsManager.createTransaction(holder, payee, money, description);

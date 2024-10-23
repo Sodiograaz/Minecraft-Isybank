@@ -100,6 +100,16 @@ public class ConfigurationUtils
 		return deserialize(EXCEEDING_NUMBER_VALUE());
 	}
 	
+	private static String NEGATIVE_NUMBER_VALUE()
+	{
+		return messagesSection.getString("NegativeNumber");
+	}
+	
+	public static Component NegativeNumberValue()
+	{
+		return deserialize(NEGATIVE_NUMBER_VALUE());
+	}
+	
 	// Player-To-Player Operations
 	private static final ConfigurationSection p2p = messagesSection.getConfigurationSection("P2P-Operations");
 	
@@ -140,11 +150,16 @@ public class ConfigurationUtils
 	// Bank Operations
 	private static final ConfigurationSection bankOperations = messagesSection.getConfigurationSection("Bank-Operations");
 	
-	private static String GIVE_OPERATION(Player target, double amount)
+	private static String GIVE_OPERATION(String target, double amount)
 	{
 		return bankOperations.getString("Give")
-				.replaceAll("%player%", target.getName())
+				.replaceAll("%player%", target)
 				.replaceAll("%amount%", NumberFormatter.formatValue(amount));
+	}
+	
+	private static String GIVE_OPERATION(Player target, double amount)
+	{
+		return GIVE_OPERATION(target.getName(), amount);
 	}
 	
 	public static Component GiveOperation(Player target, double amount)
@@ -152,11 +167,21 @@ public class ConfigurationUtils
 		return deserializeEconomicOperations(GIVE_OPERATION(target, amount));
 	}
 	
-	private static String GIVE_OTHERS_OPERATION(Player sender, double amount)
+	public static Component GiveOperation(String target, double amount)
+	{
+		return deserializeEconomicOperations(GIVE_OPERATION(target, amount));
+	}
+	
+	private static String GIVE_OTHERS_OPERATION(String sender, double amount)
 	{
 		return bankOperations.getString("Give-Others")
-				.replaceAll("%player%", sender.getName())
+				.replaceAll("%player%", sender)
 				.replaceAll("%amount%", NumberFormatter.formatValue(amount));
+	}
+	
+	private static String GIVE_OTHERS_OPERATION(Player sender, double amount)
+	{
+		return GIVE_OTHERS_OPERATION(sender.getName(), amount);
 	}
 	
 	public static Component GiveOthersOperation(Player sender, double amount)
@@ -164,14 +189,29 @@ public class ConfigurationUtils
 		return deserializeEconomicOperations(GIVE_OTHERS_OPERATION(sender, amount));
 	}
 	
-	private static String REMOVE_OTHERS_OPERATION(Player sender, double amount)
+	public static Component GiveOthersOperation(String sender, double amount)
+	{
+		return deserializeEconomicOperations(GIVE_OTHERS_OPERATION(sender, amount));
+	}
+	
+	private static String REMOVE_OTHERS_OPERATION(String sender, double amount)
 	{
 		return bankOperations.getString("Give-Others")
-				.replaceAll("%player%", sender.getName())
+				.replaceAll("%player%", sender)
 				.replaceAll("%amount%", NumberFormatter.formatValue(amount));
 	}
 	
+	private static String REMOVE_OTHERS_OPERATION(Player sender, double amount)
+	{
+		return REMOVE_OTHERS_OPERATION(sender.getName(), amount);
+	}
+	
 	public static Component RemoveOthersOperation(Player sender, double amount)
+	{
+		return deserializeEconomicOperations(REMOVE_OTHERS_OPERATION(sender, amount));
+	}
+	
+	public static Component RemoveOthersOperation(String sender, double amount)
 	{
 		return deserializeEconomicOperations(REMOVE_OTHERS_OPERATION(sender, amount));
 	}
@@ -189,16 +229,34 @@ public class ConfigurationUtils
 	}
 	
 	
-	private static String REMOVE_OPERATION(Player target, double amount)
+	private static String REMOVE_OPERATION(String target, double amount)
 	{
 		return bankOperations.getString("Remove")
-				.replaceAll("%player%", target.getName())
+				.replaceAll("%player%", target)
 				.replaceAll("%amount%", NumberFormatter.formatValue(amount));
+	}
+	
+	private static String REMOVE_OPERATION(Player target, double amount)
+	{
+		return REMOVE_OPERATION(target.getName(), amount);
 	}
 	
 	public static Component RemoveOperation(Player target, double amount)
 	{
+		return deserializeEconomicOperations(REMOVE_OPERATION(target.getName(), amount));
+	}
+	
+	public static Component RemoveOperation(String target, double amount)
+	{
 		return deserializeEconomicOperations(REMOVE_OPERATION(target, amount));
+	}
+	
+	
+	private static String SET_OPERATION(String target, double amount)
+	{
+		return bankOperations.getString("Set")
+				.replaceAll("%player%", target)
+				.replaceAll("%amount%", NumberFormatter.formatValue(amount));
 	}
 	
 	private static String SET_OPERATION(Player target, double amount)
@@ -209,6 +267,11 @@ public class ConfigurationUtils
 	}
 	
 	public static Component SetOperation(Player target, double amount)
+	{
+		return deserializeEconomicOperations(SET_OPERATION(target.getName(), amount));
+	}
+	
+	public static Component SetOperation(String target, double amount)
 	{
 		return deserializeEconomicOperations(SET_OPERATION(target, amount));
 	}
@@ -261,14 +324,15 @@ public class ConfigurationUtils
 		return deserialize(BANK_IS_DISABLED_FOR_SAFETY_MEASURES());
 	}
 	
-	private static String BANK_PAYMENTS_ARE_DISABLED()
+	private static String BANK_PAYMENTS_ARE_DISABLED(String player)
 	{
-		return bankErrorsSection.getString("BANK_PAYMENTS_ARE_DISABLED");
+		return bankErrorsSection.getString("BANK_PAYMENTS_ARE_DISABLED")
+				.replaceAll("%player%", player);
 	}
 	
-	public static Component BankPaymentsAreDisabled()
+	public static Component BankPaymentsAreDisabled(String player)
 	{
-		return deserialize(BANK_PAYMENTS_ARE_DISABLED());
+		return deserialize(BANK_PAYMENTS_ARE_DISABLED(player));
 	}
 	
 	// Economy Section

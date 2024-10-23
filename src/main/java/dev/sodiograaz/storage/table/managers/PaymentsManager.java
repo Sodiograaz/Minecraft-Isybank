@@ -43,11 +43,6 @@ public class PaymentsManager
 	 */
 	public BankAccountTransaction createTransaction(String holderUsername, String payeeUsername, double gross_bill, String description)
 	{
-		// Calculate first the values
-		double gross = gross_bill;
-		double vat = gross * ((double) 22 / 100);
-		double transaction = gross + vat;
-		
 		// PaymentId
 		String paymentId = UUID.randomUUID().toString();
 		
@@ -55,7 +50,7 @@ public class PaymentsManager
 		
 		// Prepare the statement
 		try(PreparedStatement statement = this.connection.prepareStatement(
-				"INSERT INTO users_bank_payments (holder, payee, paymentId, transaction, transaction_description, gross_bill, vat) VALUES (?,?,?,?,?,?,?);"))
+				"INSERT INTO users_bank_payments (holder, payee, paymentId, transaction, transaction_description) VALUES (?,?,?,?,?);"))
 		{
 			// HolderUserID Lookup
 			User holder = this.playerManager.lookupPlayer(holderUsername);
@@ -70,10 +65,8 @@ public class PaymentsManager
 			statement.setString(1, holderBankId);
 			statement.setString(2, payeeBankId);
 			statement.setString(3, paymentId);
-			statement.setDouble(4, transaction);
+			statement.setDouble(4, gross_bill);
 			statement.setString(5, description);
-			statement.setDouble(6, gross);
-			statement.setDouble(7, vat);
 			statement.executeUpdate();
 		}
 		catch (SQLException ignored) {}
@@ -92,12 +85,13 @@ public class PaymentsManager
 			statement.setString(1, holderBankAccountId);
 			statement.setString(2, paymentId);
 			ResultSet query = statement.executeQuery();
-			while(query.next())
+			if(query.next())
 				return BankAccountTransaction.builder()
 						.holder(holder)
 						.payee(this.playerManager.lookupPlayerByUserId(query.getString("payee")))
+						.paymentId(query.getString("paymentId"))
 						.description(query.getString("transaction_description"))
-						.gross(query.getDouble("gross_bill"))
+						.transaction(query.getDouble("transaction"))
 						.responseType(ResponseType.SUCCESS)
 						.build();
 		}
@@ -125,8 +119,9 @@ public class PaymentsManager
 				result.add(BankAccountTransaction.builder()
 						.holder(holder)
 						.payee(this.playerManager.lookupPlayerByUserId(query.getString("payee")))
+						.paymentId(query.getString("paymentId"))
 						.description(query.getString("transaction_description"))
-						.gross(query.getDouble("gross_bill"))
+						.transaction(query.getDouble("transaction"))
 						.responseType(ResponseType.SUCCESS)
 						.build());
 		}

@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dev.sodiograaz</groupId>
-    <artifactId>Minecraft-Isybank</artifactId>
-    <version>1.10.0</version>
+    <artifactId>Isybank</artifactId>
+    <version>1.2.1</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -71,6 +71,10 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -112,6 +116,12 @@
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <version>3.3.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency> <!-- THIS IS A PLUGIN API, IT DOESN'T NEED TO BE DOWNLOADED AND LOADED BY LIBBY -->
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -7,6 +7,9 @@ import dev.sodiograaz.storage.data.User;
 import dev.sodiograaz.storage.table.managers.BankManager;
 import dev.sodiograaz.storage.table.managers.PlayerManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.event.HoverEventSource;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,16 +52,22 @@ public class PlayerListeners implements Listener
 		UUID userId = event.getUniqueId();
 		String userIdS = userId.toString();
 		String profileName = event.getPlayerProfile().getName();
-		if (!this.playerManager.playerAlreadyRegistered(userIdS))
-			return;
 		
-		// Check the duplicate (NEW USERID) == (OLD USERID)
+		/**
+		 * Check the duplicate
+		 * If userId from database and userId from player are equals but username from database and username from player are not then disallow
+		 */
 		User user = this.playerManager.lookupPlayer(profileName);
-		String userIdResult = user.getUserId();
-		if (!userIdResult.equals(userIdS))
+		
+		if(user.getUserId().equals(userIdS) && !profileName.equals(user.getUsername()))
 		{
-			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_FULL, Component.text("<red>Kicked for duplicate id's in database, please contact the administrator</red>"));
+			TextComponent textComponent = Component.text("Detected duplicate ids in database. Please contact the administrator")
+					.hoverEvent(HoverEvent.showText(Component.text(String.format("Found UUID [%s] for %s\nYour UUID [%s] for %s\nBoth UUID are equals? %s\nBoth usernames are equals? %s",
+							user.getUserId(), user.getUsername(), userIdS, profileName, userIdS.equals(user.getUserId()), profileName.equals(user.getUsername())))));
+			
+			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_FULL, textComponent);
 		}
+		
 	}
 	
 }

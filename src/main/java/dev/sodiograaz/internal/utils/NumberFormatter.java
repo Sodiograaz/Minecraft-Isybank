@@ -8,17 +8,21 @@ import java.text.DecimalFormat;
 public class NumberFormatter
 {
 	
-	public static String formatValue(double value)
-	{
-		String arr[] = {"", "K", "M", "B", "T", "P", "E"};
-		int index = 0;
-		while ((value / 1000) >= 1)
-		{
-			value = value / 1000;
-			index++;
+	public static String formatValue(double value) {
+		if (value >= 1_000D) {
+			return String.format("%s%s", new DecimalFormat("#.##").format(value), "K");
 		}
-		DecimalFormat decimalFormat = new DecimalFormat("#.##");
-		return String.format("%s %s", decimalFormat.format(value), arr[index]);
+		else if (value >= 1_000_000D) {
+			return String.format("%s%s", new DecimalFormat("#.##").format(value), "M");
+		}
+		else if(value >= 1_000_000_000D) {
+			return String.format("%s%s", new DecimalFormat("#.##").format(value), "B");
+		}
+		else if(value >= 1_000_000_000_000D)
+		{
+			return String.format("%s%s", new DecimalFormat("#.##").format(value), "T");
+		}
+		return String.format("%s", new DecimalFormat("#.##").format(value));
 	}
 
 }

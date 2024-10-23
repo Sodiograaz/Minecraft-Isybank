@@ -5,7 +5,8 @@ package dev.sodiograaz.internal.utils;
 */
 public class NumberUtils
 {
-	public static double MIN_VALUE_SAFETY = -9000000000000000000D;
+	
+	public static double MIN_VALUE_SAFETY = 0D;
 	public static double MAX_VALUE_SAFETY = 9000000000000000000D;
 	
 }

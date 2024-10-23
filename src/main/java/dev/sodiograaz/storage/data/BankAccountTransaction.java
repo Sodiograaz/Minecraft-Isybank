@@ -14,7 +14,7 @@ public class BankAccountTransaction
 	
 	private User holder;
 	private User payee;
-	private double gross;
+	private double transaction;
 	private String description;
 	private String paymentId;
 	private ResponseType responseType;
@@ -28,8 +28,7 @@ public class BankAccountTransaction
 				.payee(User.emptyUser())
 				.description("")
 				.paymentId("")
-				.gross(0D)
-				.accountNow(0D)
+				.transaction(0D)
 				.responseType(ResponseType.NOTHING_HAPPENED)
 				.build();
 	}
