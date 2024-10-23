@@ -2,6 +2,7 @@ package dev.sodiograaz.storage;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import dev.sodiograaz.internal.IsybankEconomy;
 import dev.sodiograaz.storage.table.managers.*;
 import lombok.Getter;
 import org.apache.ibatis.jdbc.ScriptRunner;
@@ -38,7 +39,6 @@ public class StorageManager
 		this.database = this.storageSection.getString("Database");
 		ConfigurationSection urlParameters = this.storageSection.getConfigurationSection("UrlParameters");
 		parameters = urlParameters.getValues(false);
-		parameters.forEach((x,y) -> Bukkit.getLogger().info(String.format("%s -> %s", x, y)));
 	}
 	
 	@Getter
@@ -54,11 +54,14 @@ public class StorageManager
 	
 	public StorageManager createConnection()
 	{
-		if(!checkConnection()) return this;
+		if(!checkConnection()) {
+			Bukkit.getLogger().severe("Storage is not configured properly, please check the configuration file. disabling plugin...");
+			Bukkit.getServer().getPluginManager().disablePlugin(IsybankEconomy.getInstance());
+			return this;
+		}
 		
 		this.hikariDataSource = new HikariDataSource(getHikariConfig());
 		
-		Bukkit.getLogger().info(String.format("2: Connection check: isClosed: %s, isRunning: %s", this.hikariDataSource.isClosed(), this.hikariDataSource.isRunning()));
 		try
 		{
 			ScriptRunner scriptRunner = new ScriptRunner(hikariDataSource.getConnection());

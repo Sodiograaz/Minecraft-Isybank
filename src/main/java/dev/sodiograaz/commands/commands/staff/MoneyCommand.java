@@ -55,11 +55,6 @@ public class MoneyCommand implements MECommand
 				player.sendMessage(ConfigurationUtils.PlayerNotFoundComponent());
 				return true;
 			}
-			if (args[0].equals(player.getName())) {
-				BankAccount bankAccount = this.bankManager.lookupBankByUserId(this.playerManager.lookupPlayer(player.getName()).getUserId());
-				player.sendMessage(ConfigurationUtils.BalanceSelf(bankAccount.getBankAvailability()));
-				return true;
-			}
 			BankAccount bankAccount = this.bankManager.lookupBankByUserId(this.playerManager.lookupPlayer(args[0]).getUserId());
 			player.sendMessage(ConfigurationUtils.BalanceOthers(args[0], bankAccount.getBankAvailability()));
 			return true;
